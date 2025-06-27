@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!-- ExoPlayer View -->
+    <androidx.media3.ui.PlayerView
+        android:id="@+id/playerView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:keepScreenOn="true" />
+
+    <!-- Stats Overlay -->
+    <LinearLayout
+        android:id="@+id/statsOverlay"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="12dp"
+        android:layout_gravity="top|start"
+        android:background="#AA000000"
+        android:elevation="8dp">
+
+        <TextView
+            android:id="@+id/fpsText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="FPS: "
+            android:textColor="#FFFFFF"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/bitrateText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Bitrate: "
+            android:textColor="#FFFFFF"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/resolutionText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Resolution: "
+            android:textColor="#FFFFFF"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/pingText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Ping: "
+            android:textColor="#FFFFFF"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/packetLossText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Packet Loss: "
+            android:textColor="#FFFFFF"
+            android:textSize="14sp" />
+    </LinearLayout>
+
+    <!-- Fullscreen Toggle Button -->
+    <ImageButton
+        android:id="@+id/fullscreenButton"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="16dp"
+        android:background="@android:color/transparent"
+        android:src="@android:drawable/ic_menu_view"
+        android:contentDescription="Fullscreen" />
+</FrameLayout>

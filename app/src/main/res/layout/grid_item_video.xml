@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="450dp"
+    android:layout_margin="20dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto"> <!-- Fixed height so it’s visible -->
+
+    <ImageView
+        android:id="@+id/videoThumbnail"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop" />
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|start"
+        android:layout_margin="8dp"
+        app:cardElevation="4dp"
+        android:backgroundTint="#AA000000"
+        app:cardCornerRadius="8dp">
+
+        <TextView
+            android:id="@+id/videoLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Video"
+            android:textColor="#FFFFFF"
+            android:textStyle="bold"
+            android:padding="8dp" />
+    </androidx.cardview.widget.CardView>
+</FrameLayout>
