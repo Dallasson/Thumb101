@@ -33,12 +33,13 @@ class VideoPlayerActivity : AppCompatActivity() {
 
     private val handler = Handler(Looper.getMainLooper())
     private var droppedFrames = 0
-    private var renderedFrames = 0
+    private var frameCounter = 0
     private var isFullscreen = false
     private var lastFrameTimeNanos = 0L
-    private var frameCounter = 0
+    private var currentPing = "N/A"
+    private var currentHost: String = "google.com"
 
-    private val updateStats = object : Runnable {
+    private val statsRunnable = object : Runnable {
         @OptIn(UnstableApi::class)
         override fun run() {
             if (player.playbackState == Player.STATE_READY && player.isPlaying) {
@@ -54,7 +55,9 @@ class VideoPlayerActivity : AppCompatActivity() {
                 bitrateText.text = "Bitrate: ${bitrate / 1000} kbps"
                 resolutionText.text = "Resolution: ${width}x$height"
                 packetLossText.text = "Packet Loss: $droppedFrames frames"
+                pingText.text = "Ping: $currentPing"
             }
+            measurePing(currentHost)
             handler.postDelayed(this, 1000)
         }
     }
@@ -94,6 +97,8 @@ class VideoPlayerActivity : AppCompatActivity() {
         player.prepare()
         player.play()
 
+        currentHost = videoUri.host ?: "google.com"
+
         player.addAnalyticsListener(object : AnalyticsListener {
             override fun onDroppedVideoFrames(
                 eventTime: AnalyticsListener.EventTime,
@@ -104,13 +109,10 @@ class VideoPlayerActivity : AppCompatActivity() {
             }
         })
 
-        handler.post(updateStats)
+        handler.post(statsRunnable)
         startFpsCounter()
 
         fullscreenButton.setOnClickListener { toggleFullscreen() }
-
-        val pingHost = videoUri.host ?: "google.com"
-        measurePing(pingHost)
     }
 
     private fun toggleFullscreen() {
@@ -124,17 +126,15 @@ class VideoPlayerActivity : AppCompatActivity() {
 
     private fun measurePing(host: String) {
         Thread {
-            val start = System.currentTimeMillis()
             try {
                 val process = Runtime.getRuntime().exec("/system/bin/ping -c 1 $host")
                 val result = process.waitFor()
-                val end = System.currentTimeMillis()
-                val pingTime = if (result == 0) end - start else -1
-                runOnUiThread {
-                    pingText.text = "Ping: ${if (pingTime >= 0) "$pingTime ms" else "Failed"}"
-                }
+                val output = process.inputStream.bufferedReader().readText()
+                val timeLine = output.lines().find { it.contains("time=") }
+                val time = timeLine?.substringAfter("time=")?.substringBefore(" ms")?.trim()
+                currentPing = if (result == 0 && time != null) "$time ms" else "Failed"
             } catch (e: Exception) {
-                runOnUiThread { pingText.text = "Ping: Error" }
+                currentPing = "Error"
             }
         }.start()
     }
@@ -143,7 +143,6 @@ class VideoPlayerActivity : AppCompatActivity() {
         Choreographer.getInstance().postFrameCallback(object : Choreographer.FrameCallback {
             override fun doFrame(frameTimeNanos: Long) {
                 if (lastFrameTimeNanos > 0 && player.isPlaying) {
-                    renderedFrames++
                     frameCounter++
                 }
                 lastFrameTimeNanos = frameTimeNanos
@@ -154,7 +153,7 @@ class VideoPlayerActivity : AppCompatActivity() {
 
     override fun onStop() {
         super.onStop()
-        handler.removeCallbacks(updateStats)
+        handler.removeCallbacks(statsRunnable)
         player.release()
     }
 

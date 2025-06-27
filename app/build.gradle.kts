@@ -36,7 +36,9 @@ android {
 }
 
 dependencies {
+    implementation (libs.android.youtubeextractor)
     implementation (libs.androidx.media3.exoplayer)
+    implementation (libs.androidx.media3.exoplayer.hls)
     implementation (libs.androidx.media3.ui)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)

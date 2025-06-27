@@ -1,32 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="450dp"
-    android:layout_margin="20dp"
-    xmlns:app="http://schemas.android.com/apk/res-auto"> <!-- Fixed height so it’s visible -->
+    android:layout_height="wrap_content"
+    app:cardElevation="6dp"
+    app:cardCornerRadius="16dp"
+    android:layout_margin="5dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <ImageView
-        android:id="@+id/videoThumbnail"
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:scaleType="centerCrop" />
+        android:layout_height="wrap_content">
 
-    <androidx.cardview.widget.CardView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="top|start"
-        android:layout_margin="8dp"
-        app:cardElevation="4dp"
-        android:backgroundTint="#AA000000"
-        app:cardCornerRadius="8dp">
+        <ImageView
+            android:id="@+id/videoThumbnail"
+            android:layout_width="match_parent"
+            android:layout_height="250dp"
+            android:scaleType="centerCrop" />
 
-        <TextView
-            android:id="@+id/videoLabel"
+        <androidx.cardview.widget.CardView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Video"
-            android:textColor="#FFFFFF"
-            android:textStyle="bold"
-            android:padding="8dp" />
-    </androidx.cardview.widget.CardView>
-</FrameLayout>
+            android:layout_gravity="top|start"
+            android:layout_margin="8dp"
+            app:cardElevation="4dp"
+            android:backgroundTint="#AA000000"
+            app:cardCornerRadius="8dp">
+
+            <TextView
+                android:id="@+id/videoLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Video"
+                android:textColor="#FFFFFF"
+                android:textStyle="bold"
+                android:padding="8dp" />
+        </androidx.cardview.widget.CardView>
+    </FrameLayout>
+</androidx.cardview.widget.CardView>
