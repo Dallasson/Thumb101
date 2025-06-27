@@ -2,18 +2,20 @@ package com.thumb.nail
 
 import android.content.pm.ActivityInfo
 import android.net.Uri
-import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
+import android.os.*
+import android.view.Choreographer
 import android.widget.ImageButton
 import android.widget.TextView
+import androidx.activity.enableEdgeToEdge
 import androidx.annotation.OptIn
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.net.toUri
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.media3.common.MediaItem
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.common.Player
 import androidx.media3.exoplayer.analytics.AnalyticsListener
 import androidx.media3.ui.PlayerView
 
@@ -31,30 +33,36 @@ class VideoPlayerActivity : AppCompatActivity() {
 
     private val handler = Handler(Looper.getMainLooper())
     private var droppedFrames = 0
+    private var renderedFrames = 0
+    private var isFullscreen = false
+    private var lastFrameTimeNanos = 0L
+    private var frameCounter = 0
 
     private val updateStats = object : Runnable {
         @OptIn(UnstableApi::class)
         override fun run() {
-            val videoFormat = player.videoFormat
-            val bitrate = videoFormat?.bitrate ?: 0
-            val width = videoFormat?.width ?: 0
-            val height = videoFormat?.height ?: 0
-            val frameRate = videoFormat?.frameRate ?: 0f
+            if (player.playbackState == Player.STATE_READY && player.isPlaying) {
+                val videoFormat = player.videoFormat
+                val bitrate = videoFormat?.bitrate ?: 0
+                val width = videoFormat?.width ?: 0
+                val height = videoFormat?.height ?: 0
 
-            fpsText.text = "FPS: ${"%.1f".format(frameRate)}"
-            bitrateText.text = "Bitrate: ${bitrate / 1000} kbps"
-            resolutionText.text = "Resolution: ${width}x$height"
-            packetLossText.text = "Packet Loss: $droppedFrames frames"
+                val fps = frameCounter
+                frameCounter = 0
 
+                fpsText.text = "FPS: $fps"
+                bitrateText.text = "Bitrate: ${bitrate / 1000} kbps"
+                resolutionText.text = "Resolution: ${width}x$height"
+                packetLossText.text = "Packet Loss: $droppedFrames frames"
+            }
             handler.postDelayed(this, 1000)
         }
     }
 
-    private var isFullscreen = false
-
     @OptIn(UnstableApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
         setContentView(R.layout.activity_video_player)
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
@@ -63,7 +71,6 @@ class VideoPlayerActivity : AppCompatActivity() {
             insets
         }
 
-        // Views
         playerView = findViewById(R.id.playerView)
         fpsText = findViewById(R.id.fpsText)
         bitrateText = findViewById(R.id.bitrateText)
@@ -72,23 +79,21 @@ class VideoPlayerActivity : AppCompatActivity() {
         packetLossText = findViewById(R.id.packetLossText)
         fullscreenButton = findViewById(R.id.fullscreenButton)
 
-        // Init player
-        val videoResId = intent.getIntExtra(EXTRA_RAW_VIDEO_ID, -1)
-        if (videoResId == -1) {
+        player = ExoPlayer.Builder(this).build()
+        playerView.player = player
+
+        val firebaseUrl = intent.getStringExtra("RAW_VIDEO_URL")
+        if (firebaseUrl == null) {
             finish()
             return
         }
 
-        player = ExoPlayer.Builder(this).build().also {
-            playerView.player = it
-            val uri = Uri.parse("android.resource://$packageName/$videoResId")
-            val mediaItem = MediaItem.fromUri(uri)
-            it.setMediaItem(mediaItem)
-            it.prepare()
-            it.play()
-        }
+        val videoUri = firebaseUrl.toUri()
+        val mediaItem = MediaItem.fromUri(videoUri)
+        player.setMediaItem(mediaItem)
+        player.prepare()
+        player.play()
 
-        // Analytics listener for dropped frames
         player.addAnalyticsListener(object : AnalyticsListener {
             override fun onDroppedVideoFrames(
                 eventTime: AnalyticsListener.EventTime,
@@ -100,12 +105,12 @@ class VideoPlayerActivity : AppCompatActivity() {
         })
 
         handler.post(updateStats)
+        startFpsCounter()
 
-        fullscreenButton.setOnClickListener {
-            toggleFullscreen()
-        }
+        fullscreenButton.setOnClickListener { toggleFullscreen() }
 
-        measurePing()
+        val pingHost = videoUri.host ?: "google.com"
+        measurePing(pingHost)
     }
 
     private fun toggleFullscreen() {
@@ -117,7 +122,7 @@ class VideoPlayerActivity : AppCompatActivity() {
         isFullscreen = !isFullscreen
     }
 
-    private fun measurePing(host: String = "google.com") {
+    private fun measurePing(host: String) {
         Thread {
             val start = System.currentTimeMillis()
             try {
@@ -129,12 +134,22 @@ class VideoPlayerActivity : AppCompatActivity() {
                     pingText.text = "Ping: ${if (pingTime >= 0) "$pingTime ms" else "Failed"}"
                 }
             } catch (e: Exception) {
-                e.printStackTrace()
-                runOnUiThread {
-                    pingText.text = "Ping: Error"
-                }
+                runOnUiThread { pingText.text = "Ping: Error" }
             }
         }.start()
+    }
+
+    private fun startFpsCounter() {
+        Choreographer.getInstance().postFrameCallback(object : Choreographer.FrameCallback {
+            override fun doFrame(frameTimeNanos: Long) {
+                if (lastFrameTimeNanos > 0 && player.isPlaying) {
+                    renderedFrames++
+                    frameCounter++
+                }
+                lastFrameTimeNanos = frameTimeNanos
+                Choreographer.getInstance().postFrameCallback(this)
+            }
+        })
     }
 
     override fun onStop() {
@@ -144,6 +159,6 @@ class VideoPlayerActivity : AppCompatActivity() {
     }
 
     companion object {
-        const val EXTRA_RAW_VIDEO_ID = "RAW_VIDEO_ID"
+        const val EXTRA_VIDEO_URL = "VIDEO_URL"
     }
 }

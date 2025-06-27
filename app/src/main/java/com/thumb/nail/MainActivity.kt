@@ -11,14 +11,19 @@ import android.widget.GridView
 
 class MainActivity : AppCompatActivity() {
     private val videoList = listOf(
-        VideoItem(R.drawable.thumb_1, R.raw.video_720,"Video 720p"),
-        VideoItem(R.drawable.thumb_2, R.raw.video_1080,"Video 1080p"),
-        VideoItem(R.drawable.thumb_3, R.raw.video_2k,"Video 2K"),
-        VideoItem(R.drawable.thumb_4, R.raw.video_4k,"Video 4k")
+        VideoItem(R.drawable.thumb_1,
+            "https://firebasestorage.googleapis.com/v0/b/sushi-6533d.appspot.com/o/videos%2Fvideo_720.mp4?alt=media&token=3fa4bd79-4990-4a72-979a-b16521c4c29e","Video 720p"),
+        VideoItem(R.drawable.thumb_2,
+            "https://firebasestorage.googleapis.com/v0/b/sushi-6533d.appspot.com/o/videos%2Fvideo_1080.mp4?alt=media&token=410e619c-2cc2-469f-92e3-cf5c384ed604","Video 1080p"),
+        VideoItem(R.drawable.thumb_3,
+            "https://firebasestorage.googleapis.com/v0/b/sushi-6533d.appspot.com/o/videos%2Fvideo_2k.mp4?alt=media&token=8cdd4812-6751-4d30-9f1e-18a06c44e8fe","Video 2K"),
+        VideoItem(R.drawable.thumb_4,
+            "https://firebasestorage.googleapis.com/v0/b/sushi-6533d.appspot.com/o/videos%2Fvideo_4k.mp4?alt=media&token=a35af471-aba3-4ed0-aeeb-e420c167fcc9","Video 4k")
     )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
         setContentView(R.layout.activity_main)
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.videoGrid)) { v, insets ->
@@ -32,9 +37,9 @@ class MainActivity : AppCompatActivity() {
         gridView.adapter = adapter
 
         gridView.setOnItemClickListener { _, _, position, _ ->
-            val videoResId = videoList[position].rawVideoResId
+            val videoResId = videoList[position].videoUrl
             val intent = Intent(this, VideoPlayerActivity::class.java)
-            intent.putExtra("RAW_VIDEO_ID", videoResId)
+            intent.putExtra("RAW_VIDEO_URL", videoResId)
             startActivity(intent)
         }
     }
