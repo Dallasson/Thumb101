@@ -17,13 +17,13 @@ class MainActivity : AppCompatActivity() {
 
     private val videoList = listOf(
         VideoItem(R.drawable.thumb_1,
-            "https://firebasestorage.googleapis.com/v0/b/sushi-6533d.appspot.com/o/videos%2Fvideo_720.mp4?alt=media&token=3fa4bd79-4990-4a72-979a-b16521c4c29e","Video 720p"),
+            "https://firebasestorage.googleapis.com/v0/b/carselling-fa6a9.appspot.com/o/videos%2Fvideo_720.mp4?alt=media&token=c0d1df17-b95b-4b36-8f61-3577798137d2","Video 720p"),
         VideoItem(R.drawable.thumb_2,
-            "https://firebasestorage.googleapis.com/v0/b/sushi-6533d.appspot.com/o/videos%2Fvideo_1080.mp4?alt=media&token=410e619c-2cc2-469f-92e3-cf5c384ed604","Video 1080p"),
+            "https://firebasestorage.googleapis.com/v0/b/carselling-fa6a9.appspot.com/o/videos%2Fvideo_1080.mp4?alt=media&token=3d8d98a1-bd1f-4ead-9367-ed4fc6499f3d","Video 1080p"),
         VideoItem(R.drawable.thumb_4,
-            "https://firebasestorage.googleapis.com/v0/b/sushi-6533d.appspot.com/o/videos%2Fvideo_4k.mp4?alt=media&token=a35af471-aba3-4ed0-aeeb-e420c167fcc9","Video 4k"),
+            "https://firebasestorage.googleapis.com/v0/b/carselling-fa6a9.appspot.com/o/videos%2Fvideo_4k.mp4?alt=media&token=a9e5536b-a829-48a0-926d-0e7b3ce22023","Video 4k"),
         VideoItem(R.drawable.thumb_3,
-            "https://firebasestorage.googleapis.com/v0/b/sushi-6533d.appspot.com/o/videos%2Fvecteezy_8k-air-pollution-in-the-city-at-sunset-in-winter_7689827.mov?alt=media&token=574b9aa0-9874-472d-8e64-2eac16e7eeba","Video 8K"),
+            "https://firebasestorage.googleapis.com/v0/b/carselling-fa6a9.appspot.com/o/videos%2Fvecteezy_8k-air-pollution-in-the-city-at-sunset-in-winter_7689827.mov?alt=media&token=45c2975c-2988-47ca-a2ee-56fa48a4e7d9","Video 8K"),
     )
 
     override fun onCreate(savedInstanceState: Bundle?) {
