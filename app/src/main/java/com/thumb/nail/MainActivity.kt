@@ -35,7 +35,7 @@ class MainActivity : AppCompatActivity() {
         val rv = findViewById<RecyclerView>(R.id.rv)
         val layoutManager = GridLayoutManager(this,2)
 
-        val adapter = VideoAdapter(this, Utils.videoList)
+        val adapter = VideoAdapter(this, Utils.videoList2)
         rv.layoutManager = layoutManager
         rv.adapter = adapter
 

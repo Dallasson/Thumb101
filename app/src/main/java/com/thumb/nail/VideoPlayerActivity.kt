@@ -169,6 +169,6 @@ class VideoPlayerActivity : AppCompatActivity() {
         player.release()
     }
 
-    
+
 
 }
