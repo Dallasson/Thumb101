@@ -23,14 +23,12 @@ class VideoPlayerActivity : AppCompatActivity() {
 
     private lateinit var player: ExoPlayer
     private lateinit var playerView: PlayerView
-
     private lateinit var fpsText: TextView
     private lateinit var bitrateText: TextView
     private lateinit var resolutionText: TextView
     private lateinit var pingText: TextView
     private lateinit var packetLossText: TextView
     private lateinit var fullscreenButton: ImageButton
-
     private val handler = Handler(Looper.getMainLooper())
     private var droppedFrames = 0
     private var frameCounter = 0
@@ -51,11 +49,11 @@ class VideoPlayerActivity : AppCompatActivity() {
                 val fps = frameCounter
                 frameCounter = 0
 
-                fpsText.text = "FPS: $fps"
-                bitrateText.text = "Bitrate: ${bitrate / 1000} kbps"
-                resolutionText.text = "Resolution: ${width}x$height"
-                packetLossText.text = "Packet Loss: $droppedFrames frames"
-                pingText.text = "Ping: $currentPing"
+                "FPS: $fps".also { fpsText.text = it }
+                "Bitrate: ${bitrate / 1000} kbps".also { bitrateText.text = it }
+                "Resolution: ${width}x$height".also { resolutionText.text = it }
+                "Packet Loss: $droppedFrames frames".also { packetLossText.text = it }
+                "Ping: $currentPing".also { pingText.text = it }
             }
             measurePing(currentHost)
             handler.postDelayed(this, 1000)
@@ -74,6 +72,14 @@ class VideoPlayerActivity : AppCompatActivity() {
             insets
         }
 
+        referenceViews()
+        setUpExoPlayer()
+
+
+    }
+
+    private fun referenceViews(){
+
         playerView = findViewById(R.id.playerView)
         fpsText = findViewById(R.id.fpsText)
         bitrateText = findViewById(R.id.bitrateText)
@@ -82,10 +88,15 @@ class VideoPlayerActivity : AppCompatActivity() {
         packetLossText = findViewById(R.id.packetLossText)
         fullscreenButton = findViewById(R.id.fullscreenButton)
 
+    }
+
+    @OptIn(UnstableApi::class)
+    private fun setUpExoPlayer(){
+
         player = ExoPlayer.Builder(this).build()
         playerView.player = player
 
-        val firebaseUrl = intent.getStringExtra("RAW_VIDEO_URL")
+        val firebaseUrl = intent.getStringExtra(Utils.VIDEO_URL)
         if (firebaseUrl == null) {
             finish()
             return
@@ -113,6 +124,7 @@ class VideoPlayerActivity : AppCompatActivity() {
         startFpsCounter()
 
         fullscreenButton.setOnClickListener { toggleFullscreen() }
+
     }
 
     private fun toggleFullscreen() {
@@ -157,7 +169,6 @@ class VideoPlayerActivity : AppCompatActivity() {
         player.release()
     }
 
-    companion object {
-        const val EXTRA_VIDEO_URL = "VIDEO_URL"
-    }
+    
+
 }
